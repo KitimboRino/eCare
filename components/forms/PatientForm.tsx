@@ -1,13 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Form } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
+import SubmitButton from "@/components/ui/SubmitButton"
 
 import CustomFormField from "@/components/ui/CustomFormField"
-import { PhoneCall } from "lucide-react"
+import { UserFormValidation } from "@/lib/validation"
+import { create } from "domain"
+import { useRouter } from "next/router"
 
 export enum FormFieldType {
     INPUT = 'input',
@@ -26,20 +29,36 @@ const formSchema = z.object({
 })
 
 const PatientForm = () => {
+    const router = useRouter()
+    const [isLoading, setIsLoading] = useState(false)
+
+
     // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof UserFormValidation>>({
+        resolver: zodResolver(UserFormValidation),
         defaultValues: {
-            username: "",
+            name: "",
+            email: "",
+            phone: "",
         },
     })
 
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
+    async function onSubmit({ name, email, phone }: z.infer<typeof UserFormValidation>) {
+        setIsLoading(true);
+
+        try {
+            const userData = { name, email, phone };
+        
+            const user = await createUser(userData);
+
+            if (user) router.push(`/patients/${user.$id}/ register`);
+        }
+        catch (error) {
+            console.log(error)
+        }
     }
+
     return (
 
         <Form {...form}>
@@ -78,7 +97,10 @@ const PatientForm = () => {
                     iconSrc='/assets/icons/email.svg'
                     iconAlt='email'
                 />
-                <Button type="submit">Submit</Button>
+
+                <SubmitButton isLoading={isLoading}>
+                    Get Started
+                </SubmitButton>
             </form>
         </Form>
 
