@@ -10,7 +10,7 @@ import SubmitButton from "@/components/ui/SubmitButton"
 import CustomFormField from "@/components/ui/CustomFormField"
 import { UserFormValidation } from "@/lib/validation"
 import { create } from "domain"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 export enum FormFieldType {
     INPUT = 'input',
@@ -48,11 +48,11 @@ const PatientForm = () => {
         setIsLoading(true);
 
         try {
-            const userData = { name, email, phone };
+            // const userData = { name, email, phone };
         
-            const user = await createUser(userData);
+            // const user = await createUser(userData);
 
-            if (user) router.push(`/patients/${user.$id}/ register`);
+            // if (user) router.push(`/patients/${user.$id}/ register`);
         }
         catch (error) {
             console.log(error)
